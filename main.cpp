@@ -114,17 +114,38 @@ public:
     //*** My implementation
 
     // Remove from position
-    //The best option to use queue here
+    //The best option to use the queue here
     bool removeAtPos(int value) {
-
-        Node* ptr = new Node(value);//value with 
+    // Check if list is empty
+        if (head == nullptr) 
+        {
+            return false;
+        }
         
-
-        //if (->data == nullptr)
+        // If removing first element (position 0)
+        if (position == 0) 
+        {
+            Node* temp = head;
+            head = head->next;
+            delete temp;
+            return true;
+        }
         
-
-
+        // Find the node before the one we want to remove
+        Node* prev = iterate(position - 1);
+        
+        // If position is out of bounds
+        if (prev == nullptr || prev->next == nullptr) {
+            return false;
+        }
+        
+        // Remove the node at position
+        Node* toDelete = prev->next;
+        prev->next = toDelete->next;
+        delete toDelete;
+        return true;
     }
+
     //****
     
 
@@ -186,4 +207,5 @@ int main() {
     list.display();
     return 0;
 }
+
 
