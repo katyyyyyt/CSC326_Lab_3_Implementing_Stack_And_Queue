@@ -162,11 +162,28 @@ public:
 
     bool removeLast() {
         //head here is our top
+        // Check if list is empty
+        if (head == nullptr) {
+            return false;
+        }
         
-
-
+        // If only one element
+        if (head->next == nullptr) {
+            delete head;
+            head = nullptr;
+            return true;
+        }
         
-        //that the function has done 
+        // Find second to last node
+        Node* current = head;
+        while (current->next->next != nullptr) {
+            current = current->next;
+        }
+        
+        // Delete last node
+        delete current->next;
+        current->next = nullptr;
+        return true;
     }
 
 
@@ -207,5 +224,6 @@ int main() {
     list.display();
     return 0;
 }
+
 
 
