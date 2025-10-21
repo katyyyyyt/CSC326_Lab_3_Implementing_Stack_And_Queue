@@ -16,6 +16,133 @@ public:
     }
 };
 
+///My implementation
+
+class Stack {
+private:
+    Node* top;
+    int count;
+
+public :
+    Stack() { //stack constructor 
+
+        // initially stack is empty
+        top = nullptr;
+        count = 0; //size of the stack
+    }
+
+    //***
+
+    void push(int x) {
+        Node* temp = new Node(x);
+        temp->next = top;
+        top = temp;
+        count++;
+    }  // Big-O notation : O(1)
+
+
+    //***
+
+    int pop() {
+
+        if (top == NULL) {
+            return -1;
+        }
+
+        Node* temp = top;
+        top = top->next;
+        int val = temp->data;
+
+        count--;
+        delete temp;
+        return val;
+        // Big-O notation : O(1)
+    }
+
+    //***
+
+    int peek() {
+
+        if (top == NULL) {
+            cout << "Stack is Empty" << endl;
+            return -1;
+        }
+
+        return top->data;
+    }
+    //Big-O notation : O(1)
+
+    bool isEmpty() {
+        return top == nullptr;
+    }
+};
+
+
+/************/
+class Queue {
+private:
+    Node* front;
+    Node* rear;
+    int count;
+
+public:
+    Queue() {
+        front = rear = nullptr;
+        count = 0;
+    }
+
+    //***
+
+    void enqueue(int new_data) {
+        Node* node = new Node(new_data);
+
+        if (front == nullptr) {
+            front = rear = node;
+        }
+        else {
+            rear->next = node;
+            rear = node;
+        }
+        count++;
+    }
+
+    //***
+
+    int dequeue() {
+
+        if (front == nullptr) {
+            return -1;
+        }
+
+        Node* temp = front;
+        int removedData = temp->data;
+        front = front->next;
+
+        if (front == nullptr)
+        rear = nullptr;
+        delete temp;
+        return removedData;
+    }
+    
+    //***
+
+    int getfront() {
+        if (front == nullptr) {
+            cout << "Empty" << endl;
+            return -1;
+        }
+        return front->data;
+    }
+
+    bool isEmpty() {
+        return front == nullptr;
+    }
+
+};
+
+
+
+//////////
 class LinkedList {
 private:
     Node* head;
@@ -114,45 +241,60 @@ public:
     //*** My implementation
 
     // Remove from position
-    //The best option to use the queue here
+    //The best option to use queue here
     bool removeAtPos(int value) {
-    // Check if list is empty
-        if (head == nullptr) 
-        {
-            return false;
-        }
-        
-        // If removing first element (position 0)
-        if (position == 0) 
-        {
-            Node* temp = head;
-            head = head->next;
-            delete temp;
+            if (head == nullptr || value < 0) {
+                return false;
+            }
+
+            Queue q;
+            Node* current = head;
+            int index = 0;
+            bool found = false;
+
+            // Enqueue all elements into the queue
+            while (current != nullptr) {
+                if (index == value) {
+                    // Skip this element (don't enqueue it)
+                    found = true;
+                }
+                else {
+                    q.enqueue(current->data);
+                }
+                current = current->next;
+                index++;
+            }
+
+            if (!found) {
+                return false; // Position out of bounds
+            }
+
+            // Clear the original list
+            while (head != nullptr) {
+                Node* temp = head;
+                head = head->next;
+                delete temp;
+            }
+
+            // Rebuild the list from queue
+            while (!q.isEmpty()) {
+                append(q.dequeue());
+            }
+
             return true;
+            
         }
         
-        // Find the node before the one we want to remove
-        Node* prev = iterate(position - 1);
-        
-        // If position is out of bounds
-        if (prev == nullptr || prev->next == nullptr) {
-            return false;
-        }
-        
-        // Remove the node at position
-        Node* toDelete = prev->next;
-        prev->next = toDelete->next;
-        delete toDelete;
-        return true;
-    }
+
+
 
     //****
     
 
     //Remove from position
-    bool removeFirst() {
-       removeAtPos(0);
-
+    bool removeFirst(){
+        removeAtPos(0);
+        
     }
     //****
 
@@ -161,29 +303,28 @@ public:
     // The best option here is to use Stack implementation
 
     bool removeLast() {
-        //head here is our top
-        // Check if list is empty
         if (head == nullptr) {
             return false;
         }
-        
-        // If only one element
-        if (head->next == nullptr) {
-            delete head;
-            head = nullptr;
-            return true;
-        }
-        
-        // Find second to last node
+
+        // Use stack to count the size
+        Stack s;
         Node* current = head;
-        while (current->next->next != nullptr) {
+
+        while (current != nullptr) {
+            s.push(current->data);
             current = current->next;
         }
-        
-        // Delete last node
-        delete current->next;
-        current->next = nullptr;
-        return true;
+
+        // Count how many elements we pushed
+        int count = 0;
+        while (!s.isEmpty()) {
+            s.pop();
+            count++;
+        }
+
+        // Remove at position (count - 1)
+        return removeAtPos(count - 1);
     }
 
 
@@ -209,6 +350,7 @@ public:
         cout << "NULL" << endl;
     }
 };
+
 int main() {
     LinkedList list;
     list.append(10);
@@ -225,5 +367,12 @@ int main() {
     return 0;
 }
 
+/*
+*
+
+Linked List: 5 -> 10 -> 15 -> 20 -> 30 -> NULL
+Contains 20? Yes
+After removing 20: 5 -> 10 -> 15 -> 30 -> NULL
 
 
+*/
