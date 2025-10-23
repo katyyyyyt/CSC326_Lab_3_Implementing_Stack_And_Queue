@@ -1,6 +1,6 @@
 #include <iostream>
-
 using namespace std;
+
 //Lab 3 Implementing Queue and Stack
 //Kateryna Taranenko
 
@@ -12,6 +12,37 @@ public:
         data = value;
         next = nullptr;
     }
+};
+
+// Forward declaration
+class LinkedList;
+
+///Stack implementation using LinkedList
+class Stack {
+private:
+    LinkedList* list;
+
+public:
+    Stack();
+    ~Stack();
+    void push(int x);
+    int pop();
+    int peek();
+    bool isEmpty();
+};
+
+///Queue implementation using LinkedList
+class Queue {
+private:
+    LinkedList* list;
+
+public:
+    Queue();
+    ~Queue();
+    void enqueue(int new_data);
+    int dequeue();
+    int getfront();
+    bool isEmpty();
 };
 
 //////////
@@ -110,7 +141,7 @@ public:
         }
         return false; // Not found
     }
-    
+
     //*** My implementation
 
     // Remove at position using Queue
@@ -130,7 +161,8 @@ public:
             if (index == position) {
                 // Skip this element (don't enqueue it)
                 found = true;
-            } else {
+            }
+            else {
                 q.enqueue(current->data);
             }
             current = current->next;
@@ -173,7 +205,7 @@ public:
         // Use stack to count the size
         Stack s;
         Node* current = head;
-        
+
         while (current != nullptr) {
             s.push(current->data);
             current = current->next;
@@ -212,81 +244,91 @@ public:
     }
 };
 
-///Stack implementation using LinkedList
+// Stack implementation
+Stack::Stack() {
+    list = new LinkedList();
+}
 
-class Stack {
-private:
-    LinkedList list;
+Stack::~Stack() {
+    delete list;
+}
 
-public:
-    Stack() {
-        // LinkedList is automatically initialized
+void Stack::push(int x) {
+    list->prepend(x); // Add to beginning (top of stack)
+}  // Big-O notation : O(1)
+
+int Stack::pop() {
+    if (isEmpty()) {
+        return -1;
+    }
+    Node* first = list->iterate(0);
+    if (first == nullptr) return -1;
+    int val = first->data;
+    list->removeFirst(); // Remove first element
+    return val;
+} // Big-O notation : O(1)
+
+int Stack::peek() {
+    if (isEmpty()) {
+        cout << "Stack is Empty" << endl;
+        return -1;
+    }
+    Node* first = list->iterate(0);
+    return first ? first->data : -1;
+} // Big-O notation : O(1)
+
+bool Stack::isEmpty() {
+    return list->size() == 0;
+}
+
+// Queue implementation
+Queue::Queue() {
+    list = new LinkedList();
+}
+
+Queue::~Queue() {
+    delete list;
+}
+
+void Queue::enqueue(int new_data) {
+    list->append(new_data); // Add to end (rear of queue)
+}
+
+int Queue::dequeue() {
+    if (isEmpty()) {
+        return -1;
     }
 
-    void push(int x) {
-        list.prepend(x); // Add to beginning (top of stack)
-    }  // Big-O notation : O(1)
+    Node* first = list->iterate(0);
 
-    int pop() {
-        if (isEmpty()) {
-            return -1;
-        }
-        int val = list.iterate(0)->data; // Get first element
-        list.removeFirst(); // Remove first element
-        return val;
-    } // Big-O notation : O(1)
-
-    int peek() {
-        if (isEmpty()) {
-            cout << "Stack is Empty" << endl;
-            return -1;
-        }
-        return list.iterate(0)->data;
-    } // Big-O notation : O(1)
-
-    bool isEmpty() {
-        return list.size() == 0;
-    }
-};
-
-
-/************/
-///Queue implementation using LinkedList
-
-class Queue {
-private:
-    LinkedList list;
-
-public:
-    Queue() {
-        // LinkedList is automatically initialized
+    if (first == nullptr) {
+        return -1;
     }
 
-    void enqueue(int new_data) {
-        list.append(new_data); // Add to end (rear of queue)
+    int val = first->data;
+    list->removeFirst(); // Remove first element
+    return val;
+}
+
+int Queue::getfront() {
+    if (isEmpty()) {
+        cout << "Empty" << endl;
+        return -1;
     }
 
-    int dequeue() {
-        if (isEmpty()) {
-            return -1;
-        }
-        int val = list.iterate(0)->data; // Get first element
-        list.removeFirst(); // Remove first element
-        return val;
-    }
-    
-    int getfront() {
-        if (isEmpty()) {
-            cout << "Empty" << endl;
-            return -1;
-        }
-        return list.iterate(0)->data;
-    }
+    Node* first = list->iterate(0);
 
-    bool isEmpty() {
-        return list.size() == 0;
+    if (first != nullptr) {
+        return first->data;
     }
-};
+    else {
+        return -1;
+    }
+}
+
+bool Queue::isEmpty() {
+    return list->size() == 0;
+}
 
 int main() {
     LinkedList list;
@@ -295,30 +337,22 @@ int main() {
     list.append(30);
     list.prepend(5);
     list.insertAt(2, 15);
-    
-    cout << "Original Linked List: ";
+    cout << "Linked List: ";
     list.display();
-    
     cout << "Contains 20? " << (list.contains(20) ? "Yes" : "No") << endl;
-    
     list.remove(20);
-    cout << "After removing value 20: ";
+    cout << "After removing 20: ";
     list.display();
-    
-    // Test removeAtPos
-    cout << "\nTesting removeAtPos(1): ";
-    list.removeAtPos(1);
-    list.display();
-    
-    // Test removeLast
-    cout << "Testing removeLast(): ";
-    list.removeLast();
-    list.display();
-    
-    // Test removeFirst
-    cout << "Testing removeFirst(): ";
-    list.removeFirst();
-    list.display();
-    
     return 0;
+
 }
+/*
+Terminal display :
+
+Linked List: 5 -> 10 -> 15 -> 20 -> 30 -> NULL
+Contains 20? Yes
+After removing 20: 5 -> 10 -> 15 -> 30 -> NULL
+
+
+
+*/
